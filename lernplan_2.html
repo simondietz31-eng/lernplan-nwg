@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lernplan · Naturwissenschaftliche Grundlagen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0d1b2a;
+    --bg-panel: #13253a;
+    --line: #24405c;
+    --ink: #eef3f7;
+    --ink-dim: #9db2c4;
+    --amber: #e8a33d;
+    --cyan: #59b7c9;
+    --done: #6fae7f;
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(89,183,201,0.06) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(89,183,201,0.06) 40px),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    padding: 28px 16px 80px;
+    line-height:1.5;
+  }
+  .wrap{max-width:760px; margin:0 auto;}
+  header{margin-bottom:28px;}
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--cyan);
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+  }
+  h1{
+    font-family:'Spectral', serif;
+    font-weight:600;
+    font-size:clamp(28px,5vw,38px);
+    margin:6px 0 4px;
+  }
+  .sub{color:var(--ink-dim); font-size:15px; max-width:56ch;}
+
+  /* Signature: sine-wave progress bar */
+  .wave-box{
+    margin:24px 0 8px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 18px 10px;
+  }
+  .wave-label{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-dim);
+    margin-bottom:6px;
+  }
+  .wave-label b{color:var(--amber); font-size:14px;}
+  svg#wave{width:100%; height:56px; display:block;}
+  #waveFill{ transition: stroke-dashoffset 0.6s ease; }
+
+  .phase{
+    margin-top:36px;
+  }
+  .phase-head{
+    display:flex; align-items:baseline; gap:10px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:8px; margin-bottom:14px;
+  }
+  .phase-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px; color:var(--bg);
+    background:var(--cyan);
+    padding:2px 7px; border-radius:4px;
+    white-space:nowrap;
+  }
+  .phase-tag.amber{background:var(--amber);}
+  .phase h2{
+    font-family:'Spectral',serif; font-weight:600; font-size:20px; margin:0;
+  }
+  .phase-note{color:var(--ink-dim); font-size:13.5px; margin:-6px 0 16px;}
+
+  .day{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:12px 14px;
+    margin-bottom:10px;
+  }
+  .day-head{
+    display:flex; align-items:center; gap:10px; margin-bottom:8px;
+  }
+  .day-num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px; color:var(--ink-dim);
+    min-width:44px;
+  }
+  .day-title{font-weight:600; font-size:14.5px;}
+  .task{
+    display:flex; align-items:flex-start; gap:9px;
+    padding:4px 0 4px 54px;
+    font-size:13.5px; cursor:pointer;
+    color:var(--ink-dim);
+  }
+  .task.done{ color:var(--ink); text-decoration: line-through; text-decoration-color: var(--done); }
+  .box{
+    flex-shrink:0; width:15px; height:15px; margin-top:1px;
+    border:1.5px solid var(--cyan); border-radius:4px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .task.done .box{ background:var(--done); border-color:var(--done); }
+  .box svg{width:10px; height:10px; opacity:0;}
+  .task.done .box svg{opacity:1;}
+
+  .methods{
+    margin-top:36px;
+    display:grid; grid-template-columns: 1fr 1fr; gap:10px;
+  }
+  @media (max-width:520px){ .methods{grid-template-columns:1fr;} }
+  .m-card{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:13px 14px;
+  }
+  .m-card .m-title{
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--amber);
+    text-transform:uppercase; letter-spacing:0.05em; margin-bottom:5px;
+  }
+  .m-card p{margin:0; font-size:13px; color:var(--ink-dim);}
+
+  footer{margin-top:32px; font-size:12px; color:var(--ink-dim); text-align:center;}
+  .reset{
+    background:none; border:1px solid var(--line); color:var(--ink-dim);
+    font-family:'JetBrains Mono',monospace; font-size:11px;
+    padding:5px 10px; border-radius:6px; cursor:pointer; margin-top:10px;
+  }
+  .reset:hover{border-color:var(--cyan); color:var(--cyan);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Naturwissenschaftliche Grundlagen · Dr. Meinhard</div>
+    <h1>21 Tage bis zur Prüfung</h1>
+    <p class="sub">Mechanik, Schwingung & Wellen, Thermodynamik, Elektromagnetismus. Weil die ersten 14 Tage von anderen Prüfungen belegt sind, läuft dieser Plan in zwei Phasen: leichte Auffrischung, dann Vollgas in der letzten Woche.</p>
+  </header>
+
+  <div class="wave-box">
+    <div class="wave-label"><span>Fortschritt</span><b id="pct">0 % erledigt</b></div>
+    <svg id="wave" viewBox="0 0 700 56" preserveAspectRatio="none">
+      <path d="M0,28 Q17.5,4 35,28 T70,28 T105,28 T140,28 T175,28 T210,28 T245,28 T280,28 T315,28 T350,28 T385,28 T420,28 T455,28 T490,28 T525,28 T560,28 T595,28 T630,28 T665,28 T700,28"
+        fill="none" stroke="#24405c" stroke-width="3"/>
+      <path id="waveFill" d="M0,28 Q17.5,4 35,28 T70,28 T105,28 T140,28 T175,28 T210,28 T245,28 T280,28 T315,28 T350,28 T385,28 T420,28 T455,28 T490,28 T525,28 T560,28 T595,28 T630,28 T665,28 T700,28"
+        fill="none" stroke="#e8a33d" stroke-width="3" stroke-dasharray="1400" stroke-dashoffset="1400"/>
+    </svg>
+  </div>
+
+  <!-- PHASE 1 -->
+  <div class="phase">
+    <div class="phase-head">
+      <span class="phase-tag">Tag 1–14</span>
+      <h2>Erhaltungsphase</h2>
+    </div>
+    <p class="phase-note">Nur ~15–20 Min/Tag. Ziel ist nicht Beherrschung, sondern dass am Tag 15 nichts komplett neu ist. Kein Rechnen, nur lesen + Formeln notieren.</p>
+    <div id="phase1"></div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase">
+    <div class="phase-head">
+      <span class="phase-tag amber">Tag 15–21</span>
+      <h2>Intensivwoche</h2>
+    </div>
+    <p class="phase-note">Jetzt ist die Woche frei. Ein Thema pro Tag, komplett wiederholt und mit dem passenden Übungsblatt gerechnet — nicht nur Lösungen angeschaut.</p>
+    <div id="phase2"></div>
+  </div>
+
+  <div class="methods">
+    <div class="m-card"><div class="m-title">Active Recall</div><p>Karteikarte umdrehen, bevor du draufschaust: Formel erst aus dem Kopf hinschreiben, dann vergleichen. Reines Lesen bringt in Physik kaum etwas.</p></div>
+    <div class="m-card"><div class="m-title">Feynman-Technik</div><p>Nach jedem Kapitel: Kernidee laut in eigenen Worten erklären, als säße ein Erstsemester daneben. Wo du stockst, sitzt die Lücke.</p></div>
+    <div class="m-card"><div class="m-title">Spaced Repetition</div><p>Deshalb sind Tag 1–14 bewusst über alle vier Themen verteilt statt geblockt. Tag 19 mischt absichtlich noch mal alles durcheinander.</p></div>
+    <div class="m-card"><div class="m-title">Vorgerechnet ≠ verstanden</div><p>Bei den Übungsblättern: erst selbst rechnen, dann vergleichen. Eine angeschaute Lösung fühlt sich einfacher an, als sie in der Klausur ist.</p></div>
+  </div>
+
+  <footer>
+    Fortschritt wird automatisch gespeichert.
+    <br><button class="reset" id="resetBtn">Fortschritt zurücksetzen</button>
+  </footer>
+</div>
+
+<script>
+const phase1 = [
+  {d:"1", title:"Mechanik — Kinematik (S. 4–6)", tasks:[
+    "1.1.1 Translationsbewegungen lesen",
+    "1.1.2 Kreisbewegungen lesen",
+    "Formelkarten: v(t), a(t), Weg-Zeit-Gesetz, Winkelgeschwindigkeit ω, Zentripetalbeschleunigung"
+  ]},
+  {d:"2", title:"Mechanik — Dynamik (S. 7–11)", tasks:[
+    "1.2.1 Newtonsche Axiome lesen",
+    "1.2.2 Masse und Kräfte + 1.2.3 Bewegte Bezugssysteme lesen",
+    "Formelkarten: F=ma, Trägheitskraft, Zentrifugalkraft, Corioliskraft"
+  ]},
+  {d:"3", title:"Mechanik — Impuls, Arbeit, Energie (S. 11–18)", tasks:[
+    "1.3.1 Impuls lesen",
+    "1.3.2 Energie, Arbeit, Leistung lesen",
+    "1.3.3 Stoßprozesse lesen (elastisch vs. inelastisch)",
+    "Formelkarten: p=mv, W=F·s, E_kin, E_pot, P=W/t, Impulserhaltung"
+  ]},
+  {d:"4", title:"Mechanik — Rotation starrer Körper (S. 18–25)", tasks:[
+    "1.4.1 Rotation ausgedehnter Körper lesen (Trägheitsmoment)",
+    "1.4.2 Drehmoment und Drehimpuls lesen",
+    "Übungsblatt Mechanik nur querlesen: welche Aufgabentypen kommen dran?"
+  ]},
+  {d:"5", title:"Schwingungen I (S. 26–30)", tasks:[
+    "2.1.1 Freie harmonische Schwingung lesen",
+    "Formelkarten: Schwingungsgleichung x(t), Kreisfrequenz ω, Periodendauer T, Feder-/Fadenpendel"
+  ]},
+  {d:"6", title:"Schwingungen II (S. 30–31)", tasks:[
+    "2.1.2 Gedämpfte Schwingungen lesen",
+    "2.1.3 Erzwungene Schwingungen und Resonanz lesen",
+    "Formelkarten: Dämpfungsgrad, Resonanzfrequenz"
+  ]},
+  {d:"7", title:"Mechanische Wellen (S. 31–35)", tasks:[
+    "2.2 Mechanische Wellen lesen (Wellengleichung, Interferenz, Überlagerung)",
+    "Übungsblätter Schwingung & Wellen nur querlesen"
+  ]},
+  {d:"8", title:"Thermodynamik I (S. 36–37)", tasks:[
+    "3.1 Temperatur, Wärmeausdehnung, ideales Gasgesetz lesen",
+    "Formelkarten: pV=nRT, lineare/kubische Ausdehnung"
+  ]},
+  {d:"9", title:"Thermodynamik II (S. 37–40)", tasks:[
+    "3.2 Kinetische Gastheorie lesen",
+    "Formelkarten: mittlere kinetische Energie, Geschwindigkeitsverteilung, Freiheitsgrade"
+  ]},
+  {d:"10", title:"Thermodynamik III (S. 40–45)", tasks:[
+    "3.3 Wärme und 1. Hauptsatz lesen",
+    "Formelkarten: ΔU=Q−W, Wärmekapazität, isotherm/isochor/isobar/adiabatisch"
+  ]},
+  {d:"11", title:"Thermodynamik IV (S. 45–47)", tasks:[
+    "3.4 Der 2. Hauptsatz lesen (Entropie, Kreisprozesse, Wirkungsgrad)",
+    "Übungsblatt Thermodynamik nur querlesen"
+  ]},
+  {d:"12", title:"Elektromagnetismus I (S. 48–54)", tasks:[
+    "4.1 Ladungen, Felder, Potenziale lesen",
+    "4.2 Kapazität und Dielektrika lesen",
+    "Formelkarten: Coulomb-Gesetz, E-Feld, Potenzial, C=Q/U"
+  ]},
+  {d:"13", title:"Elektromagnetismus II (S. 54–62)", tasks:[
+    "4.3 Elektrischer Strom und Gleichstromkreise lesen",
+    "4.4 Magnetfelder + 4.5 Quellen von Magnetfeldern lesen",
+    "Formelkarten: Ohmsches Gesetz, R parallel/seriell, Lorentzkraft, Biot-Savart"
+  ]},
+  {d:"14", title:"Elektromagnetismus III & Puffer (S. 62–67)", tasks:[
+    "4.6 Elektromagnetische Induktion lesen",
+    "4.7 Wechselstromkreise + 4.8 Elm. Schwingungen und Wellen lesen",
+    "Übungsblatt Elektromagnetismus querlesen",
+    "Puffer: offene Lücken aus Tag 1–13 nachholen"
+  ]},
+];
+
+const phase2 = [
+  {d:"15", title:"Mechanik — voll wiederholen", tasks:[
+    "Kap. 1.1–1.3 aktiv wiederholen (Feynman: laut erklären, nicht nur lesen)",
+    "Kap. 1.4 Rotation aktiv wiederholen",
+    "Übungsblatt Mechanik komplett rechnen (selbst, dann vergleichen)",
+    "Fehler analysieren: welcher Fehlertyp — Formel falsch, Rechenfehler, Verständnis?"
+  ]},
+  {d:"16", title:"Schwingung & Wellen — voll wiederholen", tasks:[
+    "2.1 Schwingungen komplett aktiv wiederholen",
+    "2.2 Wellen aktiv wiederholen",
+    "Übungsblätter Schwingung & Wellen komplett rechnen"
+  ]},
+  {d:"17", title:"Thermodynamik — voll wiederholen", tasks:[
+    "3.1–3.2 aktiv wiederholen (Gasgesetz, kinetische Gastheorie)",
+    "3.3–3.4 aktiv wiederholen (1. und 2. Hauptsatz)",
+    "Übungsblatt Thermodynamik komplett rechnen"
+  ]},
+  {d:"18", title:"Elektromagnetismus — voll wiederholen", tasks:[
+    "4.1–4.3 aktiv wiederholen (Felder, Kapazität, Stromkreise)",
+    "4.4–4.8 aktiv wiederholen (Magnetfelder, Induktion, Wechselstrom)",
+    "Übungsblatt Elektromagnetismus komplett rechnen"
+  ]},
+  {d:"19", title:"Schwachstellen-Tag", tasks:[
+    "Alle Aufgaben nochmal, die bisher nicht klappten",
+    "Formelkarten aller 4 Themen gemischt durchgehen (bewusst nicht nach Thema sortiert)",
+    "Liste der 5 unsichersten Konzepte erstellen"
+  ]},
+  {d:"20", title:"Generalprobe", tasks:[
+    "Alle 4 Übungsblätter gemischt unter Zeitdruck rechnen (Prüfungsdauer simulieren)",
+    "Formelsammlung/Spickzettel final sauber zusammenstellen",
+    "Die 5 unsichersten Konzepte aus Tag 19 gezielt nachbereiten"
+  ]},
+  {d:"21", title:"Prüfungstag −0", tasks:[
+    "Nur Formelsammlung + Karteikarten leicht durchgehen",
+    "Kein neues Material mehr — früh schlafen, Unterlagen bereitlegen"
+  ]},
+];
+
+function renderPhase(list, containerId){
+  const c = document.getElementById(containerId);
+  list.forEach(day=>{
+    const div = document.createElement('div');
+    div.className='day';
+    let tasksHtml='';
+    day.tasks.forEach((t,i)=>{
+      const id = `d${day.d}-t${i}`;
+      tasksHtml += `<div class="task" data-id="${id}"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg></span><span>${t}</span></div>`;
+    });
+    div.innerHTML = `<div class="day-head"><span class="day-num">Tag ${day.d}</span><span class="day-title">${day.title}</span></div>${tasksHtml}`;
+    c.appendChild(div);
+  });
+}
+renderPhase(phase1,'phase1');
+renderPhase(phase2,'phase2');
+
+const allTaskEls = () => document.querySelectorAll('.task');
+const totalTasks = phase1.reduce((a,d)=>a+d.tasks.length,0) + phase2.reduce((a,d)=>a+d.tasks.length,0);
+const STORAGE_KEY = 'nwg-progress-v1';
+
+function loadProgress(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  }catch(e){ return {}; }
+}
+function saveProgress(state){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ console.error(e); }
+}
+function updateWave(state){
+  const doneCount = Object.values(state).filter(Boolean).length;
+  const pct = totalTasks ? Math.round((doneCount/totalTasks)*100) : 0;
+  document.getElementById('pct').textContent = pct + ' % erledigt';
+  const wave = document.getElementById('waveFill');
+  const offset = 1400 - (1400 * pct/100);
+  wave.style.strokeDashoffset = offset;
+}
+
+const state = loadProgress();
+allTaskEls().forEach(el=>{
+  const id = el.dataset.id;
+  if(state[id]){ el.classList.add('done'); }
+  el.addEventListener('click', ()=>{
+    el.classList.toggle('done');
+    state[id] = el.classList.contains('done');
+    updateWave(state);
+    saveProgress(state);
+  });
+});
+updateWave(state);
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(!confirm('Wirklich den gesamten Fortschritt zurücksetzen?')) return;
+  allTaskEls().forEach(el=>{
+    el.classList.remove('done');
+    delete state[el.dataset.id];
+  });
+  saveProgress(state);
+  updateWave(state);
+});
+</script>
+</body>
+</html>
